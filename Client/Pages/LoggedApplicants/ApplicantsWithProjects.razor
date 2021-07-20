@@ -1,0 +1,63 @@
+﻿@page "/registeredbyapplicant"
+@inject IApplicantProjectRepository appprojService
+
+<MudGrid Class="ml-2">
+    <MudItem xs="12">
+        @if (Applicants != null)
+        {
+            foreach (var applicant in Applicants)
+            {
+                <h2>Applicant</h2>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Country</th>
+                            <th>Registered Projects</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@applicant.FirstName</td>
+                            <td>@applicant.LastName</td>
+                            <td>@applicant.Country</td>
+                            <td>@applicant.Projects.Count()</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h2>Projects</h2>
+                @if (applicant.Projects.Any())
+                {
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Company</th>
+                            </tr>
+                        </thead>
+                        @foreach (var project in applicant.Projects)
+                        {
+                            <tbody>
+                                <tr>
+                                    <td>@project.Name</td>
+                                    <td>@project.Company</td>
+                                </tr>
+                            </tbody>
+                        }
+                    </table>
+                }
+            }
+        }
+    </MudItem>
+</MudGrid>
+
+@code {
+
+    public List<Applicant> Applicants { get; set; } = new List<Applicant>();
+    protected override async Task OnInitializedAsync()
+    {
+        Applicants = await appprojService.GetApplicantsWithProjects();
+    }
+
+}

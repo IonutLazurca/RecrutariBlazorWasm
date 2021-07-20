@@ -1,0 +1,53 @@
+﻿@inherits LayoutComponentBase
+
+
+<MudThemeProvider Theme="DefaultTheme" />
+<MudSnackbarProvider />
+
+<MudAppBar Elevation="1" Color="Color.Tertiary">
+    <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+    <MudText Typo="Typo.h5" Class="ml-3">Go Recruit</MudText>
+    @*<MudButton></MudButton>
+        <MudButton OnClick="@((e) => DarkMode())">Dark-Light</MudButton>*@
+    <MudAppBarSpacer />
+    <MudMenu Label="Open Menu" Icon="@Icons.Material.Filled.Login">
+        <MudMenuItem Link="/account/login">Login</MudMenuItem>
+        <MudMenuItem Link="/account/register">Register</MudMenuItem>
+        <MudMenuItem Link="/account/login">Logout</MudMenuItem>
+    </MudMenu>
+    <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+</MudAppBar>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
+    <div class="d-flex flex-column mud-width-full">
+        <MudPaper Elevation="25" Class="pa-8" Width="100%" MaxWidth="500px">
+            @*<MudIcon Icon="@Icons.Custom.Brands.GitHub" Size="Size.Large" Style="width:100px; height:100px;" />*@
+            <MudText Typo="Typo.h3" class="d-flex justify-center" GutterBottom="true" Color="Color.Tertiary">Go Recruit</MudText>
+            @Body
+        </MudPaper>
+    </div>
+</MudContainer>
+
+@code { 
+
+   
+
+    private void Logout()
+    {
+
+    }
+
+    MudTheme DefaultTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Primary = Colors.Red.Darken1,
+            Secondary = Colors.Red.Accent4,
+        },
+
+        LayoutProperties = new LayoutProperties()
+        {
+            DrawerWidthLeft = "260px",
+            DrawerWidthRight = "300px"
+        }
+    }; }

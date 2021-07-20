@@ -1,0 +1,39 @@
+﻿@page "/account/register"
+@layout LoginLayout
+
+
+<EditForm Model="@UserRequestDTO" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <MudTextField Label="First name" HelperText="Max. 8 characters"
+                  @bind-Value="UserRequestDTO.Name" For="@(() => UserRequestDTO.Name)" />
+    <MudTextField Label="Email" Class="mt-3"
+                  @bind-Value="UserRequestDTO.Email" For="@(() => UserRequestDTO.Email)" />
+    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                  @bind-Value="UserRequestDTO.Password" For="@(() => UserRequestDTO.Password)" InputType="InputType.Password" />
+    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
+                  @bind-Value="UserRequestDTO.ConfirmPassword" For="@(() => UserRequestDTO.ConfirmPassword)" InputType="InputType.Password" />
+    <MudCheckBox @bind-Checked="@AgreeToTerms" Label="I agree to the terms and privacy" Color="Color.Tertiary" Class="ml-n1 my-3" />
+    <MudCardActions>
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto">Register</MudButton>
+    </MudCardActions>
+    @*<MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
+            Fill out the form correctly to register.
+        </MudText>*@
+</EditForm>
+
+
+
+
+
+@code {
+
+    public UserRequestDTO UserRequestDTO { get; set; } = new UserRequestDTO();
+    public bool AgreeToTerms { get; set; }
+
+    private void OnValidSubmit()
+    {
+
+    }
+
+}

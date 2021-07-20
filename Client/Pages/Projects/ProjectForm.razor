@@ -1,0 +1,47 @@
+﻿@if (project != null)
+{
+    <MudItem Class="pa-4" xs="12"><h3>Project Form</h3></MudItem>
+    <MudItem Class="" xs="4">
+        <EditForm Model="@project" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <MudTextField Label="Name" HelperText="Max. 8 characters"
+                          @bind-Value="project.Name" For="@(() => project.Name)" />
+            <MudTextField Label="Company"
+                          @bind-Value="project.Company" For="@(() => project.Company)" />
+            <MudTextField Label="Description"
+                          @bind-Value="project.Description" For="@(() => project.Description)" />
+            <MudDatePicker Color="Color.Tertiary" Label="Start Date" ShowWeekNumbers="true" DisableToolbar="true"
+                           @bind-Date="project.StartDate" For="@(() => project.StartDate)" />
+            <MudDatePicker Color="Color.Tertiary" Label="End Date" ShowWeekNumbers="true" DisableToolbar="true"
+                           @bind-Date="project.EndDate" For="@(() => project.EndDate)" />
+            @*Bootstrap Date Picker*@
+            @*<div class="form-group">
+                <label for="StartDate">Start Date</label>
+                <div>
+                    <InputDate class="form-control" @bind-Value="@project.StartDate"></InputDate>
+                    <ValidationMessage For="@(() => project.StartDate)" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="StartDate">End Date</label>
+                <div>
+                    <InputDate class="form-control" @bind-Value="@project.EndDate"></InputDate>
+                    <ValidationMessage For="@(() => project.EndDate)" />
+                </div>
+            </div>*@
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto">@processType.Name</MudButton>
+            </MudCardActions>
+        </EditForm>
+    </MudItem>
+}
+
+
+
+@code {
+    [Parameter] public Project project { get; set; }
+    [Parameter] public ProcessStatus processType { get; set; }
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+
+}

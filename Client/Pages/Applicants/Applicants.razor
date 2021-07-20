@@ -1,0 +1,251 @@
+﻿@page "/applicants"
+@inject IApplicantRepository applicantsService
+@inject IJSRuntime JS
+@*@inject IApplicantsService applicantsService*@
+
+<MudGrid Class="ml-2">
+    <MudItem Class="pa-6" xs="12">
+        <a class="btn btn-outline-info" href="applicants/create">Create</a>
+    </MudItem>
+    <MudItem xs="12">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        <div class="form-group mb-2">
+                            <label for="title" class="sr-only">Title</label>
+                            <input type="text" class="form-control" id="title" placeholder="First Name"
+                                   @bind-value="applicantFilterDTO.FirstName" @bind-value:event="oninput"
+                                   @onkeypress="@((KeyboardEventArgs e) => TitleKeyPress(e))" />
+                        </div>
+                    </th>
+                    <th>
+                        <div class="form-group mb-2">
+                            <label for="title" class="sr-only">Title</label>
+                            <input type="text" class="form-control" id="title" placeholder="Last Name"
+                                   @bind-value="applicantFilterDTO.LastName" @bind-value:event="oninput"
+                                   @onkeypress="@((KeyboardEventArgs e) => TitleKeyPress(e))" />
+                        </div>
+                    </th>
+                    <th>
+                        <div class="form-group mb-2">
+                            <label for="title" class="sr-only">Title</label>
+                            <input type="text" class="form-control" id="title" placeholder="Gender"
+                                   @bind-value="applicantFilterDTO.Gender" @bind-value:event="oninput"
+                                   @onkeypress="@((KeyboardEventArgs e) => TitleKeyPress(e))" />
+                        </div>
+                    </th>
+                    <th>
+                        <div class="form-group mb-2">
+                            <label for="title" class="sr-only">Title</label>
+                            <input type="text" class="form-control" id="title" placeholder="Date of Birth"
+                                   @bind-value="applicantFilterDTO.DateOfBirth" @bind-value:event="oninput"
+                                   @onkeypress="@((KeyboardEventArgs e) => TitleKeyPress(e))" />
+                        </div>
+                    </th>
+                    <th>
+                        <div class="form-group mb-2">
+                            <label for="title" class="sr-only">Title</label>
+                            <input type="text" class="form-control" id="title" placeholder="Email"
+                                   @bind-value="applicantFilterDTO.Email" @bind-value:event="oninput"
+                                   @onkeypress="@((KeyboardEventArgs e) => TitleKeyPress(e))" />
+                        </div>
+                    </th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th>Id</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Gender</th>
+                    <th>Date Of Birth</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (applicants != null && applicants.Items.Any())
+                {
+                    @foreach (var applicant in applicants.Items)
+                    {
+                        <tr>
+                            <td>@applicant.Id</td>
+                            <td>@applicant.FirstName</td>
+                            <td>@applicant.LastName</td>
+                            <td>@applicant.Gender</td>
+                            @if (applicant.DateOfBirth != null)
+                            {
+                                <td>@applicant.DateOfBirth.Value.ToString("dd-MM-yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            <td>@applicant.Email</td>
+                            <td>
+                                <a class="btn btn-outline-warning" href="/applicants/details/@applicant.Id">Details</a>
+                                <a class="btn btn-outline-primary" href="/applicants/edit/@applicant.Id">Edit</a>
+                                <button class="btn btn-outline-danger" @onclick="@(() => DeleteApplicant(applicant.Id))">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </MudItem>
+    <MudItem xs="12">
+        <Pagination CurrentPage="pagination.PageNumber" TotalPages="totalPages" SelectPage="SelectPage"></Pagination>
+    </MudItem>
+</MudGrid>
+
+@*<MatButton>Create</MatButton>
+    <MudTable ServerData="@(new Func<TableState, Task<TableData<Applicant>>>(ServerReload))" @ref="table" MultiSelection="true" @bind-SelectedItems="selectedItems" class="mat-elevation-z5" Bordered="true" Hover="true" Dense="true" FixedHeader="true" FixedFooter="true" Height="800px">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Applicants database</MudText>
+            <MudToolBarSpacer />
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortLabel="Id" T="Applicant">Nr</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="FirstName" T="Applicant">First Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="LastName" T="Applicant">Last Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="Gender" T="Applicant">Gender</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="DateOfBirth" T="Applicant">Date Of Birth</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="Email" T="Applicant">Email</MudTableSortLabel></MudTh>
+            <MudTh>Status</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Nr">@context.Id</MudTd>
+            <MudTd DataLabel="First Name">@context.FirstName</MudTd>
+            <MudTd DataLabel="Last Name">@context.LastName</MudTd>
+            <MudTd DataLabel="Gender">@context.Gender</MudTd>
+            <MudTd DataLabel="Date Of Birth">@context.DateOfBirth</MudTd>
+            <MudTd DataLabel="Email">@context.Email</MudTd>
+            <MudTd DataLabel="Status">
+                <MudIconButton Link=@($"/applicants/details/{context.Id}") Icon="@Icons.Material.Filled.Details" Color="Color.Tertiary" Edge="Edge.End" />
+                <MudIconButton Link=@($"/applicants/edit/{context.Id}") Icon="@Icons.Material.Filled.Create" Color="Color.Info" Edge="Edge.End" />
+                <MudIconButton OnClick=@(() => DeleteApplicant(context.Id)) Icon="@Icons.Material.Filled.Delete" Color="Color.Warning" Edge="Edge.End" />
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+    <MudText Inline="true">Selected items: @(selectedItems==null ? "" : string.Join(", ", selectedItems.OrderBy(x=>x.Id).Select(x=>x.Id)))</MudText>*@
+@*<RecrutariBlazorWasm.Client.Shared.Utilities.Pagination CurrentPage="pagination.PageNumber" TotalPages="totalPages" SelectPage="SelectPage"></RecrutariBlazorWasm.Client.Shared.Utilities.Pagination>*@
+
+
+
+@code {
+
+    private ApplicantFilterDTO applicantFilterDTO { get; set; } = new ApplicantFilterDTO();
+
+    private IEnumerable<Applicant> pagedData;
+    private MudTable<Applicant> table = new MudTable<Applicant>();
+
+    private int totalItems;
+    private string searchString = null;
+
+    private HashSet<Applicant> selectedItems = new HashSet<Applicant>();
+
+    //private DateTime startTime;
+    //private TimeSpan? latency;
+
+
+    private PagingResponse<Applicant> applicants { get; set; }
+
+    private int totalPages;
+
+    private PaginationParams pagination = new PaginationParams() { PageNumber = 1, PageSize = 30 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        applicants = await applicantsService.GetApplicants(pagination);
+        totalPages = applicants.Metadata.TotalPages;
+        //await table.ReloadServerData();
+
+    }
+    private async Task SelectPage(int page)
+    {
+        pagination.PageNumber = page;
+        applicants = await applicantsService.GetApplicants(pagination);
+        totalPages = applicants.Metadata.TotalPages;
+
+    }
+
+    private async Task DeleteApplicant(int Id)
+    {
+        await applicantsService.DeleteApplicant(Id);
+        applicants = await applicantsService.GetApplicants(pagination);
+    }
+
+    private async Task OnPage(MatPaginatorPageEvent e)
+    {
+        pagination.PageNumber = e.PageIndex + 1;
+        pagination.PageSize = e.PageSize;
+        applicants = await applicantsService.GetApplicants(pagination);
+        totalPages = applicants.Metadata.TotalPages;
+        StateHasChanged();
+    }
+
+    //private async Task<TableData<Applicant>> ServerReload(TableState state)
+    //{
+    //    applicants = await applicantsService.GetApplicants(pagination);
+    //    totalPages = applicants.Metadata.TotalPages;
+    //    IEnumerable<Applicant> data = applicants.Items;
+    //    data = data.Where(element =>
+    //    {
+    //        if (string.IsNullOrWhiteSpace(searchString))
+    //            return true;
+    //        if (element.FirstName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+    //            return true;
+    //        if (element.LastName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+    //            return true;
+    //        if (element.Gender.Equals(searchString, StringComparison.OrdinalIgnoreCase))
+    //            return true;
+    //        if (element.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+    //            return true;
+    //        return false;
+    //    }).ToArray();
+    //    totalItems = data.Count();
+    //    switch (state.SortLabel)
+    //    {
+    //        case "Id":
+    //            data = data.OrderByDirection(state.SortDirection, o => o.Id);
+    //            break;
+    //        case "FirstName":
+    //            data = data.OrderByDirection(state.SortDirection, o => o.FirstName);
+    //            break;
+    //        case "LastName":
+    //            data = data.OrderByDirection(state.SortDirection, o => o.LastName);
+    //            break;
+    //        case "Gender":
+    //            data = data.OrderByDirection(state.SortDirection, o => o.Gender);
+    //            break;
+    //        case "DateOfBirth":
+    //            data = data.OrderByDirection(state.SortDirection, o => o.DateOfBirth);
+    //            break;
+    //        case "Email":
+    //            data = data.OrderByDirection(state.SortDirection, o => o.Email);
+    //            break;
+    //    }
+
+    //    pagedData = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+    //    return new TableData<Applicant>() { TotalItems = totalItems, Items = pagedData };
+    //}
+
+    //private void OnSearch(string text)
+    //{
+    //    searchString = text;
+    //    table.ReloadServerData();
+    //}
+
+    private void TitleKeyPress(KeyboardEventArgs e)
+        {
+
+        }
+
+
+}

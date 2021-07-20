@@ -1,0 +1,225 @@
+﻿<h3>Applicant Form</h3>
+
+<EditForm Model="applicant" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label for="Name">First Name</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@applicant.FirstName"></InputText>
+            <ValidationMessage For="@(() => applicant.FirstName)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="LastName">Last Name</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@applicant.LastName"></InputText>
+            <ValidationMessage For="@(() => applicant.LastName)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="Gender">Gender</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@applicant.Gender"></InputText>
+            <ValidationMessage For="@(() => applicant.Gender)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="DateOfBirth">Date Of Birth</label>
+        <div>
+            <InputDate class="form-control" @bind-Value="@applicant.DateOfBirth"></InputDate>
+            <ValidationMessage For="@(() => applicant.DateOfBirth)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="Nationality">Nationality</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@applicant.Nationality"></InputText>
+            <ValidationMessage For="@(() => applicant.Nationality)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="HomePhone">Home Phone</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@applicant.HomePhone"></InputText>
+            <ValidationMessage For="@(() => applicant.HomePhone)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="MobilePhone">MobilePhone</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@applicant.MobilePhone"></InputText>
+            <ValidationMessage For="@(() => applicant.MobilePhone)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@applicant.Email"></InputText>
+            <ValidationMessage For="@(() => applicant.Email)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="City">City</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@applicant.City"></InputText>
+            <ValidationMessage For="@(() => applicant.Country)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="Country">Country</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@applicant.Country"></InputText>
+            <ValidationMessage For="@(() => applicant.Country)" />
+        </div>
+    </div>
+
+
+    @if (applicant.Languages != null && applicant.Languages.Any())
+    {
+        foreach (var languageQualification in applicant.Languages)
+        {
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <div>
+                            <label for="Language">Language</label>
+                            <select class="form-control" @onchange="@((e) => OnValueChangedLanguage(e, languageQualification.Id))" title="languageSelection">
+                                <option value=@languageQualification.LanguageId selected="selected">@languageQualification.LanguageName</option>
+                                @foreach (var lang in languages)
+                                {
+                                    <option value="@lang.Key">@lang.Value</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <div>
+                            <label for="Qualification">Qualification</label>
+                            <select class="form-control" @onchange="@((e) => OnValueChangedQualification(e, languageQualification.Id))" title="qualificationSelection">
+                                <option value=@languageQualification.QualificationId selected="selected">@languageQualification.QualificationName</option>
+                                @foreach (var qualification in qualifications)
+                                {
+                                    <option value="@qualification.Key">@qualification.Value</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="Qualification">Action</label>
+                        <div>
+                            <button type="button" class="btn btn-danger" @onclick="@(()=>RemoveLanguageQualification(languageQualification.Id))">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    <AddLanguageQualificationForm languages="languages" qualifications="qualifications" LQ="AddLanguageQualification"></AddLanguageQualificationForm>
+
+    <RecrutariBlazorWasm.Client.Shared.Utilities.SlideToggleListMudBlazor sliderList="SlideTotalProjectList"></RecrutariBlazorWasm.Client.Shared.Utilities.SlideToggleListMudBlazor>
+
+    <button type="submit" class="btn btn-success">@processText.Name</button>
+</EditForm>
+
+
+@code {
+    [Parameter] public Applicant applicant { get; set; }
+    [Parameter] public List<MultipleSelectorModel> languages { get; set; } = new List<MultipleSelectorModel>();
+    [Parameter] public List<MultipleSelectorModel> qualifications { get; set; } = new List<MultipleSelectorModel>();
+
+    [Parameter] public List<MultipleSelectorModel> selectedLanguage { get; set; } = new List<MultipleSelectorModel>();
+    [Parameter] public List<MultipleSelectorModel> selectedQualification { get; set; } = new List<MultipleSelectorModel>();
+
+    [Parameter] public List<MultipleSelectorProjectModel> NotSelectedProject { get; set; } = new List<MultipleSelectorProjectModel>();
+    [Parameter] public List<MultipleSelectorProjectModel> SelectedProject { get; set; } = new List<MultipleSelectorProjectModel>();
+
+    [Parameter] public List<SliderSelectorModel> SlideTotalProjectList { get; set; } = new List<SliderSelectorModel>();
+
+
+    [Parameter] public EventCallback<int> LQToDelete { get; set; }
+
+    [Parameter] public EventCallback<SelectHandler> LanguageConf { get; set; }
+    [Parameter] public EventCallback<SelectHandler> QualificationConf { get; set; }
+    [Parameter] public EventCallback<LanguageQualification> AddLanguage { get; set; }
+
+    [Parameter] public ProcessStatus processText { get; set; }
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    //private bool isInvalid = false;
+
+
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    this.editContext = new EditContext(this.applicant.Languages);
+    //    if(editContext.IsModified())
+    //    {
+    //        int count = 0;
+    //        Dictionary<int, LanguageQualification> langDic = new Dictionary<int, LanguageQualification>();
+
+    //        foreach (var item in applicant.Languages)
+    //        {
+    //            if(!langDic.TryGetValue(item.LanguageId, out LanguageQualification currentItem))
+    //            {
+    //                langDic.Add(item.LanguageId, currentItem);
+    //            }
+    //            count++;
+    //        }
+    //        if(count > 0)
+    //        {
+    //            isInvalid = true;
+    //            this.StateHasChanged();
+    //        }
+    //    };
+    //}
+
+    private Task OnValueChangedLanguage(ChangeEventArgs e, int lqId)
+    {
+        var LQ = new SelectHandler();
+        var listId = lqId;
+        var languageId = Int32.Parse(e.Value.ToString());
+        var languageItem = languages.FirstOrDefault(x => x.Key == e.Value.ToString());
+        var languageName = languageItem.Value;
+        LQ.Id = listId;
+        LQ.LQId = languageId;
+        LQ.Name = languageName;
+
+        LanguageConf.InvokeAsync(LQ);
+        return null;
+    }
+
+    private Task OnValueChangedQualification(ChangeEventArgs e, int lqId)
+    {
+        var LQ = new SelectHandler();
+        var listId = lqId;
+        var qualificationId = Int32.Parse(e.Value.ToString());
+        var qualificationItem = qualifications.FirstOrDefault(x => x.Key == e.Value.ToString());
+        var qualificationName = qualificationItem.Value;
+        LQ.Id = listId;
+        LQ.LQId = qualificationId;
+        LQ.Name = qualificationName;
+
+        QualificationConf.InvokeAsync(LQ);
+        return null;
+    }
+
+    private void RemoveLanguageQualification(int id)
+    {
+        LQToDelete.InvokeAsync(id);
+    }
+
+    private void AddLanguageQualification(LanguageQualification languageQualification)
+    {
+        languageQualification.ApplicantId = applicant.Id;
+        AddLanguage.InvokeAsync(languageQualification);
+    }
+
+    public void CheckIfValid()
+    {
+
+    }
+}

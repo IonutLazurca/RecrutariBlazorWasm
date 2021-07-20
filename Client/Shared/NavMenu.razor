@@ -1,0 +1,129 @@
+﻿<MudPaper Width="250px" Class="d-inline-flex py-3" Square="true">
+    <MudNavMenu Class="mud-width-full">
+        <MudText Typo="Typo.h6" Class="px-4">Activitati</MudText>
+        <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Applicatii</MudText>
+        <MudDivider Class="my-2" />
+        <MudNavLink Href="/dashboard" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
+
+        @*<MudNavLink Href="/billing" Icon="@Icons.Filled.Receipt" Disabled="true">Billing</MudNavLink>*@
+        <MudNavGroup Title="Recruiter" Icon="@Icons.Filled.LocalActivity" Expanded="true">
+            <MudNavLink Href="/applicants" Icon="@Icons.Filled.List">Applicants</MudNavLink>
+            <MudNavLink Href="/projects" Icon="@Icons.Filled.Power">Projects</MudNavLink>
+            <MudNavLink Href="/registeredbyapplicant" Icon="@Icons.Filled.List">Registered by Applicant</MudNavLink>
+            <MudNavLink Href="/registeredbyproject" Icon="@Icons.Filled.List">Registered By Project</MudNavLink>
+            @*<MudNavLink Href="/users" Icon="@Icons.Filled.People" IconColor="Color.Success">Users</MudNavLink>
+                <MudNavLink Href="/security" Icon="@Icons.Filled.Security" IconColor="Color.Info">Security</MudNavLink>*@
+        </MudNavGroup>
+    </MudNavMenu>
+</MudPaper>
+@*<MudPaper Width="250px" Class="d-inline-flex py-3" Square="true">
+        <MudNavMenu Class="mud-width-full">
+            <MudText Typo="Typo.h6" Class="px-4">Font Awesome</MudText>
+            <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Icons</MudText>
+            <MudDivider Class="my-2" />
+            <MudNavLink Href="/dashboard" Icon="fas fa-chart-line">Dashboard</MudNavLink>
+            <MudNavLink Href="/servers" Icon="fas fa-server">Servers</MudNavLink>
+            <MudNavLink Href="/billing" Icon="fas fa-receipt" Disabled="true">Billing</MudNavLink>
+            <MudNavGroup Title="Settings" Icon="fas fa-cogs" Expanded="true">
+                <MudNavLink Href="/users" Icon="fas fa-users" IconColor="Color.Success">Users</MudNavLink>
+                <MudNavLink Href="/security" Icon="fas fa-user-shield" IconColor="Color.Info">Security</MudNavLink>
+            </MudNavGroup>
+        </MudNavMenu>
+    </MudPaper>*@
+
+
+
+
+@*<nav class="navbar navbar-expand-md bg-info">
+        <div class="navbar-nav" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> Home
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="applicants">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Applicants
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="projects">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Projects
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="registeredbyapplicant">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Logged by Applicant
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="registeredbyproject">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Logged By Company
+                    </NavLink>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        User
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="#">Login</a>
+                        <a class="dropdown-item" href="#">Logout</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>*@
+
+
+
+
+@*<div class="top-row pl-4 navbar navbar-dark">
+        <a class="navbar-brand" href="">RecrutariBlazorWasm</a>
+        <button class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>*@
+
+@*<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+        <ul class="nav flex-column">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> Home
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="applicants">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Applicants
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="projects">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Projects
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="registeredbyapplicant">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Logged by Applicant
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="registeredbyproject">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Logged By Company
+                </NavLink>
+            </li>
+        </ul>
+    </div>*@
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+}

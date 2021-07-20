@@ -1,0 +1,56 @@
+﻿
+<MudGrid Class="ml-2">
+    <MudGrid>
+        <MudItem xs="4">
+            <MudSelect Label="Language" @bind-Value="language.Key" OffsetY="true" OpenIcon="@Icons.Material.Filled.Language" >
+                @foreach (var item in languages)
+                {
+                    <MudSelectItem Value="@item.Key">@item.Value</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="3">
+            <MudSelect OffsetY="true" OpenIcon="@Icons.Material.Filled.Category" Strict="true" Label="Level" @bind-Value="enumValue">
+                @foreach (Levels level in Enum.GetValues(typeof(Levels)))
+                {
+                    <MudSelectItem Value="@level">@level</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="5">
+            @if (language.Key != null && enumValue > 0)
+            {
+                <MudIconButton Color="Color.Tertiary" @onclick="@(()=>AddLanguageQualification(languageQualification.Id))" Icon="@Icons.Material.Filled.Save" Edge="Edge.End"></MudIconButton>
+            }
+            else
+            {
+                <MudIconButton Disabled="true" Color="Color.Tertiary" @onclick="@(()=>AddLanguageQualification(languageQualification.Id))" Icon="@Icons.Material.Filled.Save" Edge="Edge.End"></MudIconButton>
+            }
+        </MudItem>
+    </MudGrid>
+</MudGrid>
+
+
+@code {
+
+    [Parameter] public List<MultipleSelectorModel> languages { get; set; } = new List<MultipleSelectorModel>();
+    [Parameter] public List<MultipleSelectorModel> qualifications { get; set; } = new List<MultipleSelectorModel>();
+    [Parameter] public EventCallback<LanguageQualification> LQ { get; set; }
+    private Levels enumValue { get; set; }
+    public MultipleSelectorModel language { get; set; } = new MultipleSelectorModel();
+
+    public LanguageQualification languageQualification { get; set; } = new LanguageQualification();
+
+    private void AddLanguageQualification(int id)
+    {
+        var languageName = languages.Find(x => x.Key == language.Key);
+        languageQualification.LanguageId = Int32.Parse(language.Key);
+        languageQualification.LanguageName = languageName.Value;
+        languageQualification.QualificationId = (int)enumValue;
+        languageQualification.QualificationName = enumValue.ToString();
+        LQ.InvokeAsync(languageQualification);
+        language.Key = null;
+        language.Value = null;
+        enumValue = 0;
+    }
+}

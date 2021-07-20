@@ -1,0 +1,93 @@
+﻿@page "/projects"
+@inject IProjectRepository projectService
+
+<MudGrid Class="ml-2">
+    <MudItem Class="pa-6" xs="12">
+        <a class="btn btn-outline-info" href="projects/create">Create</a>
+    </MudItem>
+    <MudItem xs="12">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Company</th>
+                    <th>Description</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (projects != null && projects.Items.Any())
+                {
+                    @foreach (var project in projects.Items)
+                    {
+                        <tr>
+                            <td>@project.Id</td>
+                            <td>@project.Name</td>
+                            <td>@project.Company</td>
+                            <td>@project.Description</td>
+                            @if (project.StartDate != null)
+                            {
+                                <td>@project.StartDate.Value.ToString("dd-MM-yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            @if (project.EndDate != null)
+                            {
+                                <td>@project.EndDate.Value.ToString("dd-MM-yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            <td>
+                                <a class="btn btn-outline-warning" href="/projects/edit/@project.Id">Details</a>
+                                <a class="btn btn-outline-primary" href="/projects/edit/@project.Id">Edit</a>
+                                <button class="btn btn-outline-danger" @onclick="@(() => DeleteProject(project.Id))">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        @*<Pagination CurrentPage="pagination.PageNumber" TotalPages="totalPages" SelectPage="SelectPage"></Pagination>*@
+        <RecrutariBlazorWasm.Client.Shared.Utilities.Pagination CurrentPage="pagination.PageNumber" TotalPages="totalPages" SelectPage="SelectPage"></RecrutariBlazorWasm.Client.Shared.Utilities.Pagination>
+    </MudItem>
+    
+</MudGrid>
+
+
+@code {
+
+    private PaginationParams pagination { get; set; } = new PaginationParams() { PageNumber = 1, PageSize = 10 };
+
+    private int totalPages;
+
+    private PagingResponse<Project> projects;
+
+    protected override async Task OnInitializedAsync()
+    {
+        projects = await projectService.GetProjects(pagination);
+        totalPages = projects.Metadata.TotalPages;
+    }
+
+    private async Task SelectPage(int pageNumber)
+    {
+        pagination.PageNumber = pageNumber;
+        projects = await projectService.GetProjects(pagination);
+        totalPages = projects.Metadata.TotalPages;
+    }
+
+    private async Task DeleteProject(int id)
+    {
+        await projectService.DeleteProject(id);
+        projects = await projectService.GetProjects(pagination);
+    }
+
+
+}

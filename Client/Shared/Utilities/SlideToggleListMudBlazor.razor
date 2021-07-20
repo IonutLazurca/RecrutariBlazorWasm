@@ -1,0 +1,23 @@
+﻿@if (sliderList != null && sliderList.Any())
+{
+<MudPaper>
+    <MudTable Height="470px" Hover="true" Dense="true" FixedHeader="true" Items="@sliderList" Breakpoint="Breakpoint.Sm">
+        <HeaderContent>
+            <MudTh>#</MudTh>
+            <MudTh>Project Name</MudTh>
+            <MudTh>Status</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@(sliderList.IndexOf(context)+1)</MudTd>
+            <MudTd>@context.Name</MudTd>
+            <MudTd>
+                <MudSwitch @bind-Checked="@context.Selected" Color="Color.Success"></MudSwitch>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+}
+
+@code {
+    [Parameter] public List<SliderSelectorModel> sliderList { get; set; } = new List<SliderSelectorModel>();
+}

@@ -1,0 +1,50 @@
+﻿@page "/projects/create"
+@page "/projects/edit/{Id:int}"
+@inject IProjectRepository projectService
+@inject NavigationManager navigationManager
+
+
+<MudGrid Class="ml-2">
+    <MudItem xs="12">
+        <ProjectForm project="project" OnValidSubmit="OnValidSubmit" processType="processText"></ProjectForm>
+    </MudItem>
+</MudGrid>
+
+
+
+@code {
+
+    [Parameter] public int? Id { get; set; }
+    private Project project { get; set; } = new Project();
+    private ProcessStatus processText { get; set; } = new ProcessStatus() { Name = "Create" };
+
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id >= 0)
+        {
+            project = await projectService.GetProjectById(Id.Value);
+            processText.Name = "Save Changes";
+        }
+        //else
+        //{
+        //    project.StartDate = DateTime.Today;
+        //    project.EndDate = DateTime.Today;
+        //}
+    }
+
+    private async Task OnValidSubmit()
+    {
+        if (Id != null)
+        {
+            await projectService.UpdateProject(Id.Value, project);
+        }
+        else
+        {
+            await projectService.CreateProject(project);
+        }
+        StateHasChanged();
+        navigationManager.NavigateTo("/projects");
+    }
+}

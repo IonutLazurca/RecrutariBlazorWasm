@@ -1,0 +1,24 @@
+﻿
+@if (sliderList != null && sliderList.Any())
+{
+<li class="list-group-item col-md-2">
+    @foreach (var item in sliderList)
+    {
+        <ul class="list-group">
+            <li class="list-group-item">
+                <input type="checkbox" @bind-value="item.Selected" checked="@item.Selected"> @item.Name
+            </li>
+        </ul>
+    }
+</li>
+
+}
+
+
+@code {
+    [Parameter] public List<SliderSelectorModel> sliderList { get; set; } = new List<SliderSelectorModel>();
+
+
+  
+
+}

@@ -1,0 +1,141 @@
+﻿@*@page "/applicants/create"*@
+@*@page "/applicants/edit/{Id:int}"*@
+@inject IApplicantRepository applicantRepository
+@inject NavigationManager navigationManager
+
+<MudGrid Class="ml-2">
+    <MudItem xs="12">
+        @if (applicant != null)
+        {
+            <ApplicantForm applicant="applicant" OnValidSubmit="OnValidSubmit" processText="processText" 
+                           languages="languages" 
+                           qualifications="qualifications" 
+                           selectedLanguage="selectedLanguage" 
+                           selectedQualification="selectedQualification" 
+                           LQToDelete="LQDelete" 
+                           LanguageConf="HandleLanguageSelection" 
+                           QualificationConf="HandleQualificationSelection" 
+                           AddLanguage="AddLanguage" 
+                           SelectedProject="selectedProject" 
+                           NotSelectedProject="notSelectedProject" 
+                           SlideTotalProjectList="slideTotalProjectList"></ApplicantForm>
+            @*<SlideToggleList sliderList="slideTotalProjectList"></SlideToggleList>*@
+        }
+        else
+        {
+            <p>Loading...</p>
+        }
+    </MudItem>
+</MudGrid>
+
+
+
+@code {
+
+    [Parameter] public int? Id { get; set; }
+    private ApplicantDetailsDTO applicantDetailsDTO { get; set; } = new ApplicantDetailsDTO();
+    private Applicant applicant { get; set; } = new Applicant();
+    private List<MultipleSelectorModel> languages = new List<MultipleSelectorModel>();
+    private List<MultipleSelectorModel> qualifications = new List<MultipleSelectorModel>();
+    private List<MultipleSelectorModel> selectedLanguage = new List<MultipleSelectorModel>();
+    private List<MultipleSelectorModel> selectedQualification = new List<MultipleSelectorModel>();
+    private List<MultipleSelectorProjectModel> selectedProject = new List<MultipleSelectorProjectModel>();
+    private List<MultipleSelectorProjectModel> notSelectedProject = new List<MultipleSelectorProjectModel>();
+    private ProcessStatus processText { get; set; } = new ProcessStatus() { Name = "Create" };
+    private List<Project> InitialProjects { get; set; } = new List<Project>();
+    private List<SliderSelectorModel> slideSelectedList { get; set; } = new List<SliderSelectorModel>();
+    private List<SliderSelectorModel> slideNotSelectedList { get; set; } = new List<SliderSelectorModel>();
+    private List<SliderSelectorModel> slideTotalProjectList { get; set; } = new List<SliderSelectorModel>();
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id >= 0)
+        {
+            applicantDetailsDTO = await applicantRepository.GetApplicantDetails(Id.Value);
+            applicant = applicantDetailsDTO.Applicant;
+
+            languages = applicantDetailsDTO.Languages.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList();
+            qualifications = applicantDetailsDTO.Qualifications.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList();
+
+            if (applicant.Languages != null && applicant.Languages.Any())
+            {
+                selectedLanguage = applicant.Languages.Select(x => new MultipleSelectorModel(x.LanguageId.ToString(), x.LanguageName)).ToList();
+                selectedQualification = applicant.Languages.Select(x => new MultipleSelectorModel(x.QualificationId.ToString(), x.QualificationName)).ToList();
+            }
+
+
+            if ((applicant.Projects != null && applicant.Projects.Any()) || (applicantDetailsDTO.AllProjects != null && applicantDetailsDTO.AllProjects.Any()))
+            {
+                selectedProject = applicant.Projects.Select(x => new MultipleSelectorProjectModel(x.Id, x.Name, x.Company)).ToList();
+                notSelectedProject = applicantDetailsDTO.AllProjects.Select(x => new MultipleSelectorProjectModel(x.Id, x.Name, x.Company)).ToList();
+                InitialProjects.AddRange(applicant.Projects);
+                slideSelectedList = applicant.Projects.Select(x => new SliderSelectorModel(x.Id, x.Name, x.Company)).ToList();
+                slideNotSelectedList = applicantDetailsDTO.AllProjects.Select(x => new SliderSelectorModel(x.Id, x.Name, x.Company)).ToList();
+                slideSelectedList.Select(x => { x.Selected = true; return x; }).ToList();
+                slideNotSelectedList.Select(x => { x.Selected = false; return x; }).ToList();
+                slideTotalProjectList.AddRange(slideSelectedList);
+                slideTotalProjectList.AddRange(slideNotSelectedList);
+            }
+
+            processText.Name = "Save Changes";
+        }
+    }
+
+    private async Task OnValidSubmit()
+    {
+        if (Id != null)
+        {
+            //var newProjects = selectedProject.Select(x => new Project(x.Id, x.Name, x.Company)).ToList();
+            var newProjectSlideToggle = slideTotalProjectList.Where(x => x.Selected == true).Select(x => new Project(x.Id, x.Name, x.Company)).ToList();
+            applicant.Projects.Clear();
+            applicant.Projects.AddRange(newProjectSlideToggle);
+            var applicantUpdateDTO = new ApplicantUpdateDTO { Applicant = applicant, InitialProjects = InitialProjects };
+            await applicantRepository.UpdateApplicantDetails(Id.Value, applicantUpdateDTO);
+        }
+        else
+        {
+            await applicantRepository.CreateApplicant(applicant);
+        }
+        StateHasChanged();
+        navigationManager.NavigateTo("/applicants");
+    }
+
+    private void LQDelete(int id)
+    {
+        var index = applicantDetailsDTO.Applicant.Languages.FirstOrDefault(x => x.Id == id);
+        applicant.Languages.Remove(index);
+    }
+
+    private void HandleLanguageSelection(SelectHandler languageQualification)
+    {
+        var index = applicantDetailsDTO.Applicant.Languages.FindIndex(x => x.Id == languageQualification.Id);
+        applicant.Languages[index].LanguageId = languageQualification.LQId;
+        applicant.Languages[index].LanguageName = languageQualification.Name;
+    }
+
+    private void HandleQualificationSelection(SelectHandler languageQualification)
+    {
+        var index = applicantDetailsDTO.Applicant.Languages.FindIndex(x => x.Id == languageQualification.Id);
+        applicant.Languages[index].QualificationId = languageQualification.LQId;
+        applicant.Languages[index].QualificationName = languageQualification.Name;
+    }
+
+    private void AddLanguage(LanguageQualification languageQualification)
+    {
+        if (applicant.Languages.Count > 0)
+        {
+            var id = applicantDetailsDTO.Applicant.Languages.Count();
+            var idNumber = applicantDetailsDTO.Applicant.Languages[id - 1].Id;
+            languageQualification.Id = idNumber + 1;
+            applicant.Languages.Add(languageQualification);
+        }
+        else
+        {
+            languageQualification.Id = 1;
+            applicant.Languages.Add(languageQualification);
+        }
+
+    }
+}

@@ -1,0 +1,77 @@
+﻿@page "/registeredbyproject/{id:int}"
+@inject IApplicantProjectRepository appprojService
+
+<MudGrid Class="ml-2">
+    <MudItem xs="12">
+        @if (Project != null)
+        {
+            <h2>Project</h2>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Company</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Registered</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@Project.Name</td>
+                        <td>@Project.Company</td>
+                        <td>@Project.StartDate</td>
+                        <td>@Project.EndDate</td>
+                        <td>@Project.Applicants.Count()</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2>Applicants</h2>
+
+            @if (Project.Applicants.Any())
+            {
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Country</th>
+                            <th>Created</th>
+                            <th>Last Active</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    @foreach (var applicant in Project.Applicants)
+                    {
+                        <tbody>
+                            <tr>
+                                <td>@(Project.Applicants.IndexOf(applicant)+1)</td>
+                                <td>@applicant.FirstName</td>
+                                <td>@applicant.LastName</td>
+                                <td>@applicant.Country</td>
+                                <td>@applicant.DateCreated</td>
+                                <td>@applicant.LastUpdated</td>
+                                <td>
+                                    <a class="btn btn-info" href="/applicants/edit/@applicant.Id">All Projects</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    }
+                </table>
+            }
+        }
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    public Project Project { get; set; } = new Project();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Project = await appprojService.GetProjectIdWithApplicants(Id);
+    }
+
+}

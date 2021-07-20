@@ -1,0 +1,53 @@
+﻿@page "/account/login"
+@layout LoginLayout
+
+
+<EditForm Model="AuthenticationDTO" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <MudText>Don't have an account? <MudLink Href="/account/register" Color="Color.Tertiary">Sign Up</MudLink></MudText>
+
+    <MudTextField Label="E-mail" Variant="Variant.Outlined" Class="my-6" @bind-Value="AuthenticationDTO.Email" For="@(() => AuthenticationDTO.Email)" ></MudTextField>
+
+    <MudTextField Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" @bind-Value="AuthenticationDTO.Password" For="@(() => AuthenticationDTO.Password)" />
+
+    <div Class="d-flex justify-space-between align-center">
+        <MudCheckBox T="bool" Label="Remember me?" Color="Color.Tertiary" Class="ml-n1 my-3"></MudCheckBox>
+        <MudLink Href="/account/forgot-password" Color="Color.Tertiary">Forgot pwd?</MudLink>
+    </div>
+
+
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Tertiary" Link="/" Size="Size.Medium" FullWidth="true">Sign In</MudButton>  
+</EditForm>
+
+
+
+@code {
+    public AuthenticationDTO AuthenticationDTO { get; set; } = new AuthenticationDTO();
+
+    string Password { get; set; } = "BMWvBPJXZu";
+
+    bool PasswordVisibility;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+    void TogglePasswordVisibility()
+    {
+    @if (PasswordVisibility)
+    {
+        PasswordVisibility = false;
+        PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+        PasswordInput = InputType.Password;
+    }
+    else
+    {
+        PasswordVisibility = true;
+        PasswordInputIcon = Icons.Material.Filled.Visibility;
+        PasswordInput = InputType.Text;
+    }}
+
+    private void OnValidSubmit()
+        {
+
+        }
+}

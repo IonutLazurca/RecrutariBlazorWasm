@@ -1,0 +1,171 @@
+﻿@page "/applicants/details/{id:int}"
+@inject IApplicantRepository applicantRepository
+@inject NavigationManager navigationManager
+
+
+<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+    @if (applicantDetailsDTO.Applicant != null)
+    {
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="3">
+                <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                    <MudText><b>Personal data:</b></MudText>
+                    <MudText>Name: @applicantDetailsDTO.Applicant.FirstName, @applicantDetailsDTO.Applicant.LastName</MudText>
+                    <MudText>Gender: @applicantDetailsDTO.Applicant.Gender</MudText>
+                    @if (@applicantDetailsDTO.Applicant.DateOfBirth.HasValue)
+                    {
+                        <MudText>Age: @applicantDetailsDTO.Applicant.DateOfBirth.Value.CalculateAge() </MudText>
+                    }
+                    else
+                    {
+                        <MudText>Age: not available  </MudText>
+                    }
+                    <MudText>Email: @applicantDetailsDTO.Applicant.Email</MudText>
+                    <MudText>Address: @applicantDetailsDTO.Applicant.City, @applicantDetailsDTO.Applicant.Country</MudText>
+                    @if (@applicantDetailsDTO.Applicant.LastUpdated.HasValue)
+                    {
+                        <MudText>Last updated: @applicantDetailsDTO.Applicant.LastUpdated.Value.ToString("dd-MM-yyyy")</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Last updated: Not yet updated</MudText>
+                    }
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12" sm="12" md="3">
+                <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                    <MudText><b>Professional Skills:</b></MudText>
+                
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                    <MudText><b>Work Experience:</b></MudText>
+                 
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12" sm="12" md="3">
+                <MudSimpleTable Style="overflow-x:auto" Dense="true" Bordered="true" FixedHeader="true" Hover="false">
+                    <thead>
+                        <tr>
+                            <th colspan="2"><b>Language skills</b></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in applicantDetailsDTO.Applicant.Languages)
+                        {
+                            <tr>
+                                <td>@item.LanguageName</td>
+                                <td>@item.QualificationName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </MudSimpleTable>
+            </MudItem>
+
+            <MudItem xs="12" sm="2">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                            <MudText><b>Discussions :</b></MudText>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+
+            <MudItem xs="12" sm="8" md="6">
+                <MudPaper Elevation="2" Class="pa-4" Style="height: 425px;">
+                    <MudText><b>Active projects:</b></MudText>
+                    <MudTable Height="370px" Hover="true" FixedHeader="true" Dense="true" Items="@applicant.Projects" Breakpoint="Breakpoint.Sm">
+                        <HeaderContent>
+                            <MudTh>#</MudTh>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Due Date</MudTh>
+                            <MudTh>Remaining Days</MudTh>
+                            <MudTh>Applicants</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@(applicant.Projects.IndexOf(context)+1)</MudTd>
+                            <MudTd>@context.Name</MudTd>
+                            @if (@context.EndDate.HasValue)
+                                {
+                                <MudTd>@context.EndDate.Value.ToString("dd-MM-yyyy")</MudTd>
+                                }
+                                else
+                                {
+                                <MudTd>-- </MudTd>
+                                }
+                            <MudTd>@context.CalculateWorkingDays(dates)</MudTd>
+                            <MudTd>@context.LoggedApplicants</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="8" md="4">
+                <MudPaper Elevation="2" Class="pa-4" Style="height: 425px;">
+                    <MudText><b>Available projects:</b></MudText>
+                    <MudTable Height="370px" Hover="true" Dense="true" FixedHeader="true" Items="@applicantDetailsDTO.AllProjects" Breakpoint="Breakpoint.Sm">
+                        <HeaderContent>
+                            <MudTh>#</MudTh>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Remaining days</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@(applicantDetailsDTO.AllProjects.IndexOf(context)+1)</MudTd>
+                            <MudTd>@context.Name</MudTd>
+                            @if (@context.EndDate.HasValue && @context.StartDate.HasValue)
+                                {
+                                <MudTd>@context.CalculateWorkingDays(dates)</MudTd>
+                                }
+                                else
+                                {
+                                <MudTd>--</MudTd>
+                                }
+                        </RowTemplate>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4">
+                <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4">
+                <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="4">
+                <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>
+
+
+
+
+@code {
+    [Parameter] public int? Id { get; set; }
+    private ApplicantDetailsDTO applicantDetailsDTO { get; set; } = new ApplicantDetailsDTO();
+    private Applicant applicant { get; set; } = new Applicant();
+    private List<DateTime> dates { get; set; } = new List<DateTime>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id != null)
+        {
+            applicantDetailsDTO = await applicantRepository.GetApplicantDetails(Id.Value);
+            applicant = applicantDetailsDTO.Applicant;
+            dates = applicantDetailsDTO.Dates.Select(x => x.Date).ToList();
+            foreach (var item in applicant.Projects)
+            {
+                var result = applicantDetailsDTO.LoggedApplicants.Where(x => x.Name == item.Name).SingleOrDefault();
+                item.LoggedApplicants = result.TotalApplicants;
+            }
+
+        }
+    }
+
+}

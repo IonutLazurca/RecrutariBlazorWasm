@@ -1,0 +1,71 @@
+﻿    <div class="row">
+        <p>Available Projects</p>
+        <ul class="list-group col-2">
+            @if ((NotSelected != null && NotSelected.Any()))
+            {
+                @foreach (var item in NotSelected)
+                {
+                    <li class="list-group-item" @onclick="@(() => SelectItem(item))">@item.Company</li>
+                }
+            }
+            else
+            {
+                <li></li>
+            }
+
+        </ul>
+
+        <div class="col-md-1">
+            <button type="button" @onclick="SelectAll">@selectAll</button>
+            <button type="button" @onclick="DeselectAll">@removeAll</button>
+        </div>
+        <p>Active Projects</p>
+        <ul class="list-group col-2">
+            @if (Selected != null && Selected.Any())
+            {
+                @foreach (var item in Selected)
+                {
+                    <li class="list-group-item" @onclick="(() => DeselectItem(item))">@item.Company</li>
+                }
+            }
+            else
+            {
+                <li></li>
+            }
+
+        </ul>
+    </div>
+
+
+@code {
+    [Parameter] public List<MultipleSelectorProjectModel> Selected { get; set; } = new List<MultipleSelectorProjectModel>();
+    [Parameter] public List<MultipleSelectorProjectModel> NotSelected { get; set; } = new List<MultipleSelectorProjectModel>();
+    private string selectAll = ">>";
+    private string removeAll = "<<";
+
+    private void SelectItem(MultipleSelectorProjectModel item)
+    {
+        Selected.Add(item);
+        NotSelected.Remove(item);
+    }
+
+    private void DeselectItem(MultipleSelectorProjectModel item)
+    {
+        Selected.Remove(item);
+        NotSelected.Add(item);
+    }
+
+    private void SelectAll()
+    {
+        Selected.AddRange(NotSelected);
+        NotSelected.Clear();
+
+    }
+
+    private void DeselectAll()
+    {
+        NotSelected.AddRange(Selected);
+        Selected.Clear();
+    }
+
+}
